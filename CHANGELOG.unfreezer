@@ -1,4 +1,4 @@
-# UnFreezer lite v0.1.1
+# UnFreezer lite v0.2
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -18,3 +18,6 @@ UnFreezer lite 0.1 to UnFreezer lite 0.1.1
 		Also, Overnet would not function properly unless you installed UnFreezer in the OVERNET_DIR. 
 		Last but not least, UnFreezer will now check if the ports are free before a startup and wait as long as necessary.
 		Thanks a lot to wossName who pointed out those problems!
+UnFreezer lite 0.1.1 to UnFreezer lite 0.2
+		lite 0.2 uses a different symptom to detect freezes - memory usage. On many systems, OVERNET appears to reserve
+		increasing amounts of virtual memory and halts pretty precisely when it exceeds 2mio kbytes (!!).

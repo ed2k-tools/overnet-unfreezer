@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# UnFreezer lite v0.1.1
+# UnFreezer lite v0.2
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -17,44 +17,24 @@ while true;
 
 		# Check if our unfreezer.sh parent process is running - the parent PID is given by the PPID bash variable. 
 		# If not, it has been ended by the user or something unexpected. In this case we should clean up and "die".
-		ps -A | grep "$PPID " >/dev/null 2>&1 || { echo `date` "Shutting down UnFreezer."; 
-							    exit 1; };
+		ps -A | grep -w "$PPID" >/dev/null 2>&1 || { echo `date` "Shutting down UnFreezer."; exit 1; };
 
-		# If VERBOSE_LOGGING is on, let the world know we are there with a new check loop
-		test "$VERBOSE_LOGGING" = "TRUE" && echo -n "`date` ";
-		test "$VERBOSE_LOGGING" = "TRUE" && ps axv | grep "$OVERNET";
+		# If the virtual memory usage of OVERNET exceeds 2mio kbytes, it will freeze soon or already is frozen.
+		MEM_USAGE="`ps axv | grep -w \"./$OVERNET\" | grep -vw \"grep\" | head -n1 | awk '{print $7}'`";
 
-		# When did OVERNET last write? And what time is it now? If the last last write operation was more 
-		# than MAX_AGE ago, we can _assume_ that the program is frozen, but we don't know for sure 
-		# - if wanted, we will do more tests. UnFreezer will find out if the last write was to the 
-		# logfile or to the temp directory of overnet and use the most current timestamp for calculations.
-		# Ok so let's do a bit of maths. UNIX time, seconds since 1/1/1970, are perfect for that.
-		UNIX_LOG_LASTCHANGE="`date -r $OVERNET_DIR/log.txt +%s`";
-		LAST_TEMP_FILE=`ls -rt1 $OVERNET_TEMPDIR | tail -n1` 
-		UNIX_TEMP_LASTCHANGE=`date -r $OVERNET_TEMPDIR/$LAST_TEMP_FILE +%s`
-		UNIX_CURRENT_TIME="`date +%s`";
-		# A return value of "0" from expr means the expression is "false"
-		if [ "`expr $UNIX_TEMP_LASTCHANGE \< $UNIX_LOG_LASTCHANGE`" = "0" ];
-			then UNIX_LASTCHANGE="$UNIX_TEMP_LASTCHANGE";
-			else UNIX_LASTCHANGE="$UNIX_LOG_LASTCHANGE";
-		fi;
+                # If VERBOSE_LOGGING is on, let the world know we are there with a new check loop
+                test "$VERBOSE_LOGGING" = "TRUE" && echo -n "`date` ";
+                test "$VERBOSE_LOGGING" = "TRUE" && ps axv | grep -w "./$OVERNET" | grep -vw "grep" | head -n1;
 
+		# In case overnet is currently being restarted or something, the output won't be useable, wait for the next loop. 
+		test "$MEM_USAGE" = "" && test "$VERBOSE_LOGGING" = "TRUE" && echo "Cannot determine OVERNET's reserved memory."
+		test "$MEM_USAGE" = "" && continue;
 
-		UNIX_DIFFERENCE="`expr $UNIX_CURRENT_TIME \- $UNIX_LASTCHANGE`";
-
-		# If more than MAX_AGE has passed since the last write operation, 
-		# we _might_ have a freeze. 
-		if [ "`expr $UNIX_DIFFERENCE \> $MAX_AGE`" = "0" ]; 
-			then 	# If VERBOSE_LOGGING is on, let the world know we are there with a new check loop
-		                test "$VERBOSE_LOGGING" = "TRUE" && echo "OK.";
-				# Leave this loop run aka return to the top of the while loop. 
-				continue;
-			else	# If VERBOSE_LOGGING is off, we need to echo the date now. 
-				test "$VERBOSE_LOGGING" = "TRUE" || echo -n "`date` ";
-				echo "OVERNET has not written since $UNIX_DIFFERENCE seconds ago.";
+		if [ "`expr $MEM_USAGE \> 2000000`" = "1" ]; 
+			then	echo "OVERNET's reserved memory: $MEM_USAGE kbytes.";
 				echo -n `date` "Killing OVERNET...";
 				# Kill the OVERNET main process
-				OVERNET_PID="`ps -A | grep $OVERNET | head -n1 | awk '{print $1}'`";
+				OVERNET_PID="`ps -A | grep -w \"$OVERNET\" | grep -vw \"grep\" | head -n1 | awk '{print $1}'`";
 				if [ "$OVERNET_PID" = "" ]; 
 					then	echo "already dead.";
 					else	if kill $OVERNET_PID >/dev/null 2>&1
@@ -72,11 +52,9 @@ while true;
 
 				fi;		
 				# Now unfreezer.sh will wake up and start another loop.
-				# So will we. Make sure OVERNET won't be killed during startup.
-				touch $OVERNET_DIR/log.txt;
-
+				# So will we.
 		fi;
-		# Just some extra break for fancy formating of the log output.
-		echo;
+		
+
 	done;
 

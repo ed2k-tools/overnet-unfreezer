@@ -1,4 +1,4 @@
-# UnFreezer lite v0.1.1
+# UnFreezer lite v0.2
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions. 
@@ -47,7 +47,7 @@ unfreezer.conf		The configfile. Just read it and alter the variables you need to
 # write action was more than a predefined time ago, we assume a freeze and kill OVERNET, which will then be restarted
 # by the while loop it is in. 
 # UnFreezer lite is a smaller version of the previous UnFreezer scripts which attempts to work as much "out-of-the-box"
-# as possible. Hence, ipchains/iptables based freeze detection has been removed, while the file age based mechanisms 
+# as possible. Hence, ipchains/iptables based freeze detection has been removed, while the memory usage based mechanisms 
 # have been improved. 
 
 
@@ -69,7 +69,6 @@ chown -R overnet.root /usr/local/bin/unfreezer/
 # (aka u+rwx), the rest needs 600 (aka u+rw). Suffice to say that your temp and incoming directories need to be writeable 
 # for that user, and the shared dirs need to be readable. If you invoke unfreezer.sh as root and have configured the 
 # user you want it to run as in the config file, it will automatically switch to that user asap. 
-# Invoking it as root is required if you wish to use advanced freeze detection (aka traffic measurement).
 
 
 #################
@@ -87,7 +86,7 @@ chown -R overnet.root /usr/local/bin/unfreezer/
 # ...go to the OVERNET crew of course, the Edonkey people, the Edonkey Linux CLC crashfix scripters 
 # for the inspiration to do this and last but not least the folks at the OVERNET forum
 # who inspired and supported me with ideas and concepts and complete code pieces - LinuxFreak, dexterhollywood and hitecc. 
-# Also thanks to wossName who pointed out some problems in the 0.1 release. 
+# Also thanks to wossName who pointed out some problems in the 0.1 release.
 # You might also want to check out noisyb's C implementation of a workaround based on ipchains. 
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# UnFreezer lite v0.1.1
+# UnFreezer lite v0.2
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -49,10 +49,8 @@ if [ "$READY_TO_RUN" = "TRUE" ];
 		# If unfreezer.check detects a freeze, it will kill the OVERNET child process and 
 		# unfreezer.sh will return to the loop (and restart OVERNET after a break). 
 		while true;
-			do	# Make sure OVERNET won't be killed during startup.
-				touch $OVERNET_DIR/log.txt;
-
-				# Startup. Check if we can use those ports. 
+			do	
+				# Startup. Check if we can use those ports.
 
                                 #####################################################################################
                                 # This piece of code was donated by LinuxFreak :) - I modified it a tiny bit ;)     #
@@ -75,19 +73,19 @@ if [ "$READY_TO_RUN" = "TRUE" ];
                                 # End of LinuxFreak's code                                                           #
                                 ######################################################################################
 
-				echo `date` "Starting OVERNET.";
+                                echo `date` "Starting OVERNET.";
 
-				# OVERNET needs to be started from within its directory.
-				# "time" will display how long OVERNET was up when it terminates.
-				cd $OVERNET_DIR;
-				time ./$OVERNET;
-				cd $UNFREEZER_DIR;
+                                # OVERNET needs to be started from within its directory.
+                                # "time" will display how long OVERNET was up when it terminates.
+                                cd $OVERNET_DIR;
+                                time ./$OVERNET;
+                                cd $UNFREEZER_DIR;
 
-				# No matter what, OVERNET is dead if/when we are here. So lets revive it!
-				# Wait a while for all TCP connections to timeout, then restart.
-				echo `date` "OVERNET has died.";
-				echo `date` "Sleeping 30 seconds to allow you to abort (Ctrl-C)..." && sleep 30
-			done;
+                                # No matter what, OVERNET is dead if/when we are here. So lets revive it!
+                                # Wait a while for all TCP connections to timeout, then restart.
+                                echo `date` "OVERNET has died.";
+                                echo `date` "Sleeping 30 seconds to allow you to abort (Ctrl-C)..." && sleep 30
+                        done;
 	else	# For some reason, we could not reach a state that allows us to run safely. Perhaps the username is wrong?
 		echo `date` "UnFreezer can not run as $OVERNET_USER - please doublecheck the username/config!";
 		echo `date` "Shutting down UnFreezer.";
