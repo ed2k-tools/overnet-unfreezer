@@ -1,0 +1,99 @@
+# UnFreezer lite v0.1
+# A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
+# user interaction anymore - and kill/restart it then.
+# Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions. 
+
+
+#########
+# ISSUE #
+#########
+
+# As oultined above, there is a bug in the OVERNET Linux Command Line Client Version 0.29.1 that locks up the client at fake 
+# upload/download speed and renders all but the most basic commands (vd, vu, vc, vp etc.) useless. 
+# No actual uploads/downloads will occur anymore. The issue is a known bug as described here:
+
+http://sda.edonkey2000.com/phpbt/bug.php?op=show&bugid=178
+
+# As the Linux CLC is just a small part of the OVERNET and the OVERNET crew can do only so much, I figured it would be wise 
+# to build a hack/workaround to allow for living with it. 
+
+# As of version 0.42 or possibly 0.41 of the OVERNET Linux CLC, even the most basic commands will not trigger a response.
+
+
+##############
+# COMPONENTS #
+##############
+
+README.unfreezer	This file, a description of the UnFreezer scripts and the idea behind them.
+LICENSE.unfreezer	The license, basically the normal GPL notice.
+CHANGELOG.unfreezer	A file describing what changes have been made to which version.
+unfreezer.sh		The main script. Call it instead of overnet after installing and configuring UnFreezer.
+	       		Basically, it detaches a unfreezer.check process and then enters an OVERNET loop. 
+unfreezer.check		The script that determines when OVERNET is frozen and kills it then. 
+			unfreezer.sh will then enter a new loop and restart OVERNET.  
+unfreezer.conf		The configfile. Just read it and alter the variables you need to. 
+			You WILL need to alter some.
+
+
+########
+# INFO #
+########
+
+# Unlike the Edonkey crashfix scripts which inspired me (at this point I wish to express my gratitude
+# to the scripter(s) who came up with those), the bug in the Linux CLC of OVERNET does not cause an exit,
+# but rather a frozen status where the CLC will not respond to any commands. 
+# After some time of observation I and others came up with concepts on how to detect this "frozen" status.
+# We determine when OVERNET last wrote to either the logfile ("log.txt") or the temp directory. If the most recent 
+# write action was more than a predefined time ago, we assume a freeze and kill OVERNET, which will then be restarted
+# by the while loop it is in. 
+# UnFreezer lite is a smaller version of the previous UnFreezer scripts which attempts to work as much "out-of-the-box"
+# as possible. Hence, ipchains/iptables based freeze detection has been removed, while the file age based mechanisms 
+# have been improved. 
+
+
+#############################
+# INSTALLATION INSTRUCTIONS #
+#############################
+
+# Ok I take it you already unzipped UnFreezer to the place you want it to be. If not, move it into your destination 
+# directory (f.i. /usr/local/bin/unfreezer/) and do so. 
+
+tar xvfz unfreezer.tar.gz
+
+# You might want to change the owner/user of the files. I have set everything to be owned by root,
+# so you will have to chown all these files to your OVERNET user, f.i.
+
+chown -R overnet.root /usr/local/bin/unfreezer/
+
+# The file permissions should be fine. If they are not for some reason, unfreezer.sh and unfreezer.check need 700
+# (aka u+rwx), the rest needs 600 (aka u+rw). Suffice to say that your temp and incoming directories need to be writeable 
+# for that user, and the shared dirs need to be readable. If you invoke unfreezer.sh as root and have configured the 
+# user you want it to run as in the config file, it will automatically switch to that user asap. 
+# Invoking it as root is required if you wish to use advanced freeze detection (aka traffic measurement).
+
+
+#################
+# CONFIGURATION #
+#################
+
+# It is necessary to configure some variables before UnFreezer can run. 
+# Check unfreezer.conf for more. No it won't run without that. 
+
+
+##########
+# THANKS #
+##########
+
+# ...go to the OVERNET crew of course, the Edonkey people, the Edonkey Linux CLC crashfix scripters 
+# for the inspiration to do this and last but not least the folks at the OVERNET forum
+# who inspired and supported me with ideas and concepts and complete code pieces - LinuxFreak, dexterhollywood and hitecc. 
+# You might also want to check out noisyb's C implementation of a workaround based on ipchains. 
+
+
+############
+# FEEDBACK #
+############
+
+# If you have anything to say about this program, do it on the OVERNET forums. I check them regularily 
+# and will write bugfixes if I learn about problems.  
+
