@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# UnFreezer lite v0.1
+# UnFreezer lite v0.1.1
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -22,6 +22,7 @@ while true;
 
 		# If VERBOSE_LOGGING is on, let the world know we are there with a new check loop
 		test "$VERBOSE_LOGGING" = "TRUE" && echo -n "`date` ";
+		test "$VERBOSE_LOGGING" = "TRUE" && ps axv | grep "$OVERNET";
 
 		# When did OVERNET last write? And what time is it now? If the last last write operation was more 
 		# than MAX_AGE ago, we can _assume_ that the program is frozen, but we don't know for sure 
@@ -29,7 +30,7 @@ while true;
 		# logfile or to the temp directory of overnet and use the most current timestamp for calculations.
 		# Ok so let's do a bit of maths. UNIX time, seconds since 1/1/1970, are perfect for that.
 		UNIX_LOG_LASTCHANGE="`date -r $OVERNET_DIR/log.txt +%s`";
-		LAST_TEMP_FILE=`ls -rt /crypto/temp/ | tail -n1`
+		LAST_TEMP_FILE=`ls -rt1 $OVERNET_TEMPDIR | tail -n1` 
 		UNIX_TEMP_LASTCHANGE=`date -r $OVERNET_TEMPDIR/$LAST_TEMP_FILE +%s`
 		UNIX_CURRENT_TIME="`date +%s`";
 		# A return value of "0" from expr means the expression is "false"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# UnFreezer lite v0.1
+# UnFreezer lite v0.1.1
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -52,37 +52,41 @@ if [ "$READY_TO_RUN" = "TRUE" ];
 			do	# Make sure OVERNET won't be killed during startup.
 				touch $OVERNET_DIR/log.txt;
 
-				# Startup. Let's assume there are no problems with ports being occupied. 
+				# Startup. Check if we can use those ports. 
+
+                                #####################################################################################
+                                # This piece of code was donated by LinuxFreak :) - I modified it a tiny bit ;)     #
+                                echo `date` "I'll check if there are any open connections left..."
+                                while true;
+                                        do
+                                                #Get the amount of open connections...(for tcp-Port)
+                                                tcp=$(netstat -n|grep $OVERNET_TCP_PORT |wc|awk '{print $1}')
+                                                #So, we have to check if there are any tcp-connections left...
+                                                if [ $tcp -eq "0" ]
+                                                        then
+                                                                #If there aren't any, we can go on...
+                                                                break
+                                                fi
+                                                #First, we have to wait for 30 sec. I think this is ok...(and no output, because it's disturbing. ;-)
+                                                sleep 30
+                                        #And again a new loop...
+                                        done;
+                                        echo `date` "Ok, no more connections open..."
+                                # End of LinuxFreak's code                                                           #
+                                ######################################################################################
+
 				echo `date` "Starting OVERNET.";
+
+				# OVERNET needs to be started from within its directory.
 				# "time" will display how long OVERNET was up when it terminates.
-				time $OVERNET_DIR/$OVERNET;
+				cd $OVERNET_DIR;
+				time ./$OVERNET;
+				cd $UNFREEZER_DIR;
 
 				# No matter what, OVERNET is dead if/when we are here. So lets revive it!
 				# Wait a while for all TCP connections to timeout, then restart.
 				echo `date` "OVERNET has died.";
 				echo `date` "Sleeping 30 seconds to allow you to abort (Ctrl-C)..." && sleep 30
-
-				#####################################################################################
-				# This piece of code was donated by LinuxFreak :) - I modified it a tiny bit ;)     #
-				echo `date` "I'll check if there are any open connections left..."
-				while true;
-					do
-						#Get the amount of open connections...(for tcp-Port)
-						tcp=$(netstat -n|grep $OVERNET_TCP_PORT |wc|awk '{print $1}')
-						#So, we have to check if there are any tcp-connections left...
-						if [ $tcp -eq "0" ]
-							then
-								#If there aren't any, we can go on...   
-								break
-						fi
-						#First, we have to wait for 30 sec. I think this is ok...(and no output, because it's disturbing. ;-)
-						sleep 30
-					#And again a new loop...
-					done;
-					echo `date` "Ok, no more connections open..."
-				# End of LinuxFreak's code							     #
-				######################################################################################
-
 			done;
 	else	# For some reason, we could not reach a state that allows us to run safely. Perhaps the username is wrong?
 		echo `date` "UnFreezer can not run as $OVERNET_USER - please doublecheck the username/config!";

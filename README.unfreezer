@@ -1,4 +1,4 @@
-# UnFreezer lite v0.1
+# UnFreezer lite v0.1.1
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions. 
@@ -87,6 +87,7 @@ chown -R overnet.root /usr/local/bin/unfreezer/
 # ...go to the OVERNET crew of course, the Edonkey people, the Edonkey Linux CLC crashfix scripters 
 # for the inspiration to do this and last but not least the folks at the OVERNET forum
 # who inspired and supported me with ideas and concepts and complete code pieces - LinuxFreak, dexterhollywood and hitecc. 
+# Also thanks to wossName who pointed out some problems in the 0.1 release. 
 # You might also want to check out noisyb's C implementation of a workaround based on ipchains. 
 
 

@@ -1,4 +1,4 @@
-# UnFreezer lite v0.1
+# UnFreezer lite v0.1.1
 # A set of scripts to determine when the OVERNET Linux command line client has "frozen" - does not respond to
 # user interaction anymore - and kill/restart it then.
 # Copyleft 2002 Praetorian - check LICENSE.unfreezer for the license conditions.
@@ -12,3 +12,9 @@ UnFreezer 0.3 to UnFreezer lite 0.1
 		the main process instead of childs, with a normal kill signal rather than SIGQUIT because there is no known 
 		improvement the other way. On the other hand, if a normal kill won't do the job for some reason, 
 		a kill -9 will be issued.
+UnFreezer lite 0.1 to UnFreezer lite 0.1.1
+		This version fixes a number of problems in the 0.1 release that drastically reduce UnFreezer's usability. 
+		Namely, the Checker used an absolute path on my local machine for the OVERNET_TEMPDIR rather than the variable. 
+		Also, Overnet would not function properly unless you installed UnFreezer in the OVERNET_DIR. 
+		Last but not least, UnFreezer will now check if the ports are free before a startup and wait as long as necessary.
+		Thanks a lot to wossName who pointed out those problems!
